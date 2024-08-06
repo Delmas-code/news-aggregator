@@ -5,7 +5,7 @@ from app.core.database import (
     disconnect_from_database,
     init_db
 )
-from app.routers import source
+from app.api import source
 from loguru import logger
 
 import uvicorn

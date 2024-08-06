@@ -19,28 +19,28 @@ News aggregator application.
     pip install poetry
     ```
 
-3. Install dependencies using Poetry:
+3. Activate the poetry virtual environment
+   ```
+   poetry shell
+   ```
+
+4. Install dependencies using Poetry:
    ```
    poetry install
    ```
 
-4. Set up environment variables:
+5. Set up environment variables:
    ```
    Add and Edit `.env` with your specific configuration.
 
 ## Usage
 
-1. Activate the Poetry virtual environment:
-   ```
-   poetry shell
-   ```
-
-2. Run the application:
+1. Run the application:
    ```
    poetry run uvicorn app.main:app --reload
    ```
 
-3. Access the API at `http://localhost:8000`
+2. Access the API at `http://localhost:8000`
 
 ## Development
 
@@ -49,7 +49,7 @@ News aggregator application.
   poetry run pytest
   ```
 
-- Add packages:
+- Install new packages (Add packages):
 ```
 poetry add <package-name>
 ```
@@ -65,12 +65,16 @@ news-aggregator/
 │   │   ├── database.py
 │   ├── routers/
 │   │   ├── __init__.py
+|   |   ├── source.py
 │   ├── crud/
 │   │   ├── __init__.py
+|   |   ├── source.py
 │   ├── schemas/
 │   │   ├── __init__.py
+|   |   ├── source.py
 │   ├── models/
 │   │   ├── __init__.py
+|   |   ├── source.py
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── notification.py
@@ -78,6 +82,8 @@ news-aggregator/
 │   │   ├── __init__.py
 │   ├── tests/
 │       ├── __init__.py
+├── logs
+|  |  ├── app.log
 ├── .env
 ├── README.md
 ├── .gitignore
