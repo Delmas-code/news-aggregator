@@ -5,7 +5,8 @@ from app.core.database import (
     disconnect_from_database,
     init_db
 )
-from app.api import source
+
+from app.api import source, content
 from loguru import logger
 
 import uvicorn
@@ -42,6 +43,7 @@ async def read_root():
     return {"Hello": "World"}
 
 app.include_router(source.router, prefix="/sources", tags=["sources"])
+app.include_router(content.router, prefix="/contents", tags=["contents"])
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

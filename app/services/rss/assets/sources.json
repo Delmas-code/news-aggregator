@@ -1,0 +1,101 @@
+[
+  {
+    "name": "Open Culture",
+    "url": "https://www.openculture.com/feed",
+    "type": "rss",
+    "content_category": "education",
+    "frequency": "1h",
+    "id": 1,
+    "last_fetched": "2024-08-09T11:37:29.391074",
+    "created_at": "2024-08-09T11:37:29.391074",
+    "updated_at": "2024-08-09T11:37:29.391074"
+  },
+  {
+    "name": "Khan Academy",
+    "url": "https://blog.khanacademy.org/feed/",
+    "type": "rss",
+    "content_category": "education",
+    "frequency": "1h",
+    "id": 2,
+    "last_fetched": "2024-08-09T11:41:25.811866",
+    "created_at": "2024-08-09T11:41:25.811866",
+    "updated_at": "2024-08-09T11:44:04.377478"
+  },
+  {
+    "name": "Coursera",
+    "url": "https://blog.coursera.org/feed",
+    "type": "rss",
+    "content_category": "education",
+    "frequency": "1h",
+    "id": 4,
+    "last_fetched": "2024-08-09T11:44:55.553326",
+    "created_at": "2024-08-09T11:44:55.553326",
+    "updated_at": "2024-08-09T11:44:55.553326"
+  },
+  {
+    "name": "Aljazeera",
+    "url": " http://www.aljazeera.com/xml/rss/all.xml",
+    "type": "rss",
+    "content_category": "news",
+    "frequency": "1h",
+    "id": 5,
+    "last_fetched": "2024-08-09T11:46:23.032776",
+    "created_at": "2024-08-09T11:46:23.032776",
+    "updated_at": "2024-08-09T11:46:23.032776"
+  },
+  {
+    "name": "Medium, Zebedee Samuel",
+    "url": "https://zebedeesamuelajise.medium.com/feed",
+    "type": "rss",
+    "content_category": "news",
+    "frequency": "1h",
+    "id": 6,
+    "last_fetched": "2024-08-09T12:57:52.882050",
+    "created_at": "2024-08-09T12:57:52.882050",
+    "updated_at": "2024-08-09T12:57:52.882050"
+  },
+  {
+    "name": "CRTV",
+    "url": "https://crtv.cm/feed/",
+    "type": "rss",
+    "content_category": "news",
+    "frequency": "1h",
+    "id": 7,
+    "last_fetched": "2024-08-09T12:59:12.274938",
+    "created_at": "2024-08-09T12:59:12.274938",
+    "updated_at": "2024-08-09T12:59:12.274938"
+  },
+  {
+    "name": "Mimimefoinfo",
+    "url": "https://mimimefoinfos.com/feed/",
+    "type": "rss",
+    "content_category": "news",
+    "frequency": "1h",
+    "id": 8,
+    "last_fetched": "2024-08-09T13:01:08.432045",
+    "created_at": "2024-08-09T13:01:08.432045",
+    "updated_at": "2024-08-09T13:01:08.432045"
+  },
+  {
+    "name": "BBC",
+    "url": "https://feeds.bbci.co.uk/news/rss.xml",
+    "type": "rss",
+    "content_category": "news",
+    "frequency": "1h",
+    "id": 9,
+    "last_fetched": "2024-08-09T13:04:02.863206",
+    "created_at": "2024-08-09T13:04:02.863206",
+    "updated_at": "2024-08-09T13:04:02.863206"
+  },
+  {
+    "name": "BBC Technology",
+    "url": "http://feeds.bbci.co.uk/news/technology/rss.xml",
+    "type": "rss",
+    "content_category": "news",
+    "frequency": "1h",
+    "id": 10,
+    "last_fetched": "2024-08-09T13:04:55.663254",
+    "created_at": "2024-08-09T13:04:55.663254",
+    "updated_at": "2024-08-09T13:04:55.663254"
+  }
+]

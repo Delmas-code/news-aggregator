@@ -1,17 +1,16 @@
 from sqlalchemy import Column, Integer, String, DateTime, Enum  # , UniqueConstraint
 from ..core.database import Base
-# from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from enum import Enum as PyEnum
-
-
+from .content import Content
 
 class SourceType(PyEnum):
     """News source types."""
-    RSS = "RSS"
-    Website = "Website"
-    Audio = "Audio"
-    Video = "Video"
+    RSS = "rss"
+    Website = "website"
+    Audio = "audio"
+    Video = "video"
 
 
 class Source(Base):
@@ -26,7 +25,12 @@ class Source(Base):
     last_fetched = Column(DateTime, default=datetime.utcnow)
     frequency = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    last_build_date = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    
+    """parent-child relationship with the content"""
+    contents = relationship("Content", backref="source")
     
     # How to implement the methods
     async def fetch_content(self) -> list:
