@@ -26,13 +26,11 @@ async def get_sources(db: AsyncSession, skip: int=2, limit: int =1, field : str 
 
 
 async def create_source(db: AsyncSession, source: SourceCreate):
-    print(f"\n\n{source}\n\n")
     db_source = Source(**source.dict())
-    print(db_source)
-    # db.add(db_source)
-    # await db.commit()
-    # await db.close()
-    # return db_source
+    db.add(db_source)
+    await db.commit()
+    await db.close()
+    return db_source
 
 
 async def update_source(db: AsyncSession, source_id: int, source: SourceUpdate):

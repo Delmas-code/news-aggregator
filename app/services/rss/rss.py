@@ -54,8 +54,12 @@ class ProcessLocalFeeds:
 
 class ProcessFeed:
 
-    async def launch(self, filePath):
-        result = await self.fetch_url(filePath)
+    def __init__(self, url: str, source_id: int) -> None:
+        self.url = url
+        self.source_id = source_id
+
+    async def launch(self):
+        result = await self.fetch_url(self.url)
         status, response = result["status"], result["response"]
         assert(status), response
             
@@ -96,19 +100,15 @@ class ProcessFeed:
         items = self.soup.find_all("item")
 
         for item in items:
-            title = item.title.text
-            link = item.link.text
+            item_object = {
+                'title' : item.title.text,
+                'link' : item.link.text,
+                'pub_date' : item.pubDate.text,
+                'body' : item.description.text
+            }
 
-            print(f"Title: {title} \n\nLink: {link}")
+            print(item_object)
             
-            # desc = BeautifulSoup(str(item), 'lxml-xml')
-            # new_desc = BeautifulSoup(str(desc.encoded.text), 'lxml-xml')
-            
-            # final_desc = new_desc.find('p')
-
-            # print(f"This is the description : \n\n\t {final_desc.text}")
-            
-            print("\n\n------------------\n\n")  
 
     async def handleFeed(self):
         items = self.soup.find_all("entry")
@@ -116,7 +116,13 @@ class ProcessFeed:
         for item in items:
             title = item.title.text
             link = item.link['href']
-            print(f"Page Title: {title} \nLink : {link} \n------------------\n")    
+
+    async def saveContent(): 
+        type = 'Text'
+        image_url = None
+    
+
+
 
 def saveSources(data):
     fp = open(os.path.join(current_file_path, '..', 'assets', 'sources.json'), "+w")
@@ -132,16 +138,15 @@ async def main():
     if my_sources.status_code == 200:
         data = my_sources.json() 
 
+        print(type(data))
+
         for dt in data:
-            processFeed = ProcessFeed()
-            print(f"\t{dt['name']}\n\n")
-            # await processFeed.launch(dt['url'])
+            print(dt['id'])
+            processFeed = ProcessFeed(dt['url'], dt['id'])
+            await processFeed.launch()
+        
             
 if __name__ == '__main__':
     asyncio.run(main())
 
 
-
-# url = "https://zebedeesamuelajise.medium.com/feed"
-
-# feed = ProcessFeed(url)

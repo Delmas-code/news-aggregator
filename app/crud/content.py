@@ -13,29 +13,26 @@ async def get_contents(db: AsyncSession, skip: int=2, limit: int =1, field : str
     try:
         if field:
             if field == "type":
-                stmt = select(Content).where(getattr(Content, field) == value)
+                stmt = select(Content).where(getattr(Content, field) == value).limit(limit).offset(skip)
             else:
-                stmt = select(Content).where(getattr(Content, field) == value.lower())
+                stmt = select(Content).where(getattr(Content, field) == value.lower()).offset(skip).limit(limit)
             result = await db.execute(stmt)
         else:  
             result = await db.execute(select(Content).offset(skip).limit(limit))
-            print("\n\nThis is where i am\n\n")
         
-        print(f"\n\n {result.scalars().all()}\n\n") 
-        return True, result.scalars().all()
+        result = result.scalars().all()
+        return True, result
     
     except Exception as e:
         return False, e
 
 
 async def create_content(db: AsyncSession, content: ContentCreate):
-    print(f"\n\n{content}\n\n")
     db_content = Content(**content.dict())
-    print(db_content)
-    # db.add(db_content)
-    # await db.commit()
-    # await db.close()
-    # return db_content
+    db.add(db_content)
+    await db.commit()
+    await db.close()
+    return db_content
 
 
 async def update_content(db: AsyncSession, content_id: int, content: ContentUpdate):
@@ -58,7 +55,7 @@ async def delete_content(db: AsyncSession, content_id: int):
         await db.close()
         return db_content
     else:
-        raise Exception(f"content with id {id} not found")
+        raise Exception(f"content with id {content_id} not found")
 
 
 async def delete_contents(db: AsyncSession):

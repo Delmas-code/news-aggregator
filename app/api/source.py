@@ -49,6 +49,8 @@ async def get_sources(
             raise HTTPException(status_code=404, detail=f"Provided field, {field} is not found")  
 
     status, sources = await crud_source.get_sources(db, skip, limit, field, value)
+
+    print(sources)
     
     if not status:
         raise HTTPException(status_code=404, detail=f"No such record found: {sources}")  

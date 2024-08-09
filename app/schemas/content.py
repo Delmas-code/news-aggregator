@@ -17,8 +17,8 @@ class ContentBase(BaseModel):
     image_url: str = Field(None, examples="https://benevenite.com/wp-content/uploads/2024/07/cropped-favicon-32x32.jpg")
 
 
-# ContentCreate inherits from ContentBase since it has the same fields
-# Use this when creating a Content
+# # ContentCreate inherits from ContentBase since it has the same fields
+# # Use this when creating a Content
 class ContentCreate(ContentBase):
     pass
 
@@ -36,8 +36,7 @@ class  ContentUpdate(BaseModel):
 class ContentInDBBase(ContentBase):
     id: int
     last_fetched: datetime
-    created_at: datetime
-    updated_at: datetime
+    published_at: datetime
 
 
 # Content inherits from ContentInDBBase since it has the same fields

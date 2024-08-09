@@ -49,6 +49,8 @@ async def get_contents(
             raise HTTPException(status_code=404, detail=f"Provided field, {field} is not found")  
 
     status, contents = await crud_content.get_contents(db, skip, limit, field, value)
+
+    print(contents)
     
     if not status:
         raise HTTPException(status_code=404, detail=f"No such record found: {contents}")  
