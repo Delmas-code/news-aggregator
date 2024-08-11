@@ -29,7 +29,6 @@ class   SourceUpdate(BaseModel):
     type: Optional[SourceType] = Field(None, example=SourceType.Website)
     content_category: Optional[str] = Field(None, example="Startups")
     frequency: Optional[str] = Field(None, example="30m")
-    last_build_date: Optional[datetime] = Field(None, example="2024-08-08 00:00:00+01:00")
 
 # SourceInDBBase inherits from SourceBase and has additional fields for data from DB
 class SourceInDBBase(SourceBase):

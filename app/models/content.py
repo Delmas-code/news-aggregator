@@ -16,7 +16,10 @@ class Content(Base):
     """News article/content model."""
     __tablename__ = "contents"
 
-    id = Column(Integer, primary_key=True, index=True)
+    # A content, based on the rss feed
+    # has a guid and a pub date that can uniquely identify it.
+
+    id = Column(String, primary_key=True, index=True)
     source_id = Column(Integer, ForeignKey("sources.id"))
     title = Column(String, unique=True, index=True, nullable=False)
     body = Column(Text, unique=True, index=True, nullable=False)
