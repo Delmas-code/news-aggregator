@@ -18,9 +18,6 @@ app = FastAPI(docs_url="/docs", title="News feed Aggregator")
 
 @app.on_event("startup")
 async def startup() -> None:
-    """start the rss service"""
-    await rss_parser.main()
-
     """Initialize database connection and tables."""
     try:
         await connect_to_database()
