@@ -5,11 +5,11 @@ from ..models.source import SourceType
 
 # SourceBase has the required fields for creating a source
 # Use this as the base class for SourceCreate and SourceUpdate
+
 class SourceBase(BaseModel):
     """
     '...' means that field is required
     """
-
     name: str = Field(..., example="instanvi")
     url: str = Field(..., example="https://instanvi.com")
     type: SourceType = Field(..., example=SourceType.Website)
@@ -23,12 +23,13 @@ class SourceCreate(SourceBase):
 
 # SourceUpdate inherits from SourceBase and has optional fields
 # Use this when updating a source
-class SourceUpdate(BaseModel):
+class   SourceUpdate(BaseModel):
     name: Optional[str] = Field(None, example="instanvi")
     url: Optional[str] = Field(None, example="https://instanvi.com")
     type: Optional[SourceType] = Field(None, example=SourceType.Website)
     content_category: Optional[str] = Field(None, example="Startups")
     frequency: Optional[str] = Field(None, example="30m")
+    last_build_date: Optional[datetime] = Field(None, example="2024-08-08 00:00:00+01:00")
 
 # SourceInDBBase inherits from SourceBase and has additional fields for data from DB
 class SourceInDBBase(SourceBase):
@@ -43,7 +44,8 @@ class SourceInDBBase(SourceBase):
 class Source(SourceInDBBase):
     pass
 
+
 # SourceInDB inherits from SourceInDBBase since it has the same fields
 # Use this when working with data in the database
 class SourceInDB(SourceInDBBase):
-    pass
+    pass 
