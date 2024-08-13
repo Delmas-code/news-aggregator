@@ -28,10 +28,13 @@ async def get_contents(db: AsyncSession, skip: int=2, limit: int =1, field : str
 
 
 async def create_content(db: AsyncSession, content: ContentCreate):
+    print(type(content))
     db_content = Content(**content.dict())
     db.add(db_content)
     await db.commit()
     await db.close()
+
+    print("Item has been created successfully")
     return db_content
 
 

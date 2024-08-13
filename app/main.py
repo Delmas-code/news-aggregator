@@ -5,7 +5,7 @@ from app.core.database import (
     disconnect_from_database,
     init_db
 )
-
+from app.services.rss import rss_parser
 from app.api import source, content
 from loguru import logger
 
@@ -15,7 +15,6 @@ import uvicorn
 logger.add("logs/app.log", rotation="10 MB", retention="10 days", level="INFO")
 
 app = FastAPI(docs_url="/docs", title="News feed Aggregator")
-
 
 @app.on_event("startup")
 async def startup() -> None:
@@ -27,7 +26,6 @@ async def startup() -> None:
     except Exception as e:
         logger.error(f"Error connecting to database: {e}")
 
-
 @app.on_event("shutdown")
 async def shutdown() -> None:
     """Close database connection."""
@@ -36,6 +34,7 @@ async def shutdown() -> None:
         logger.info("Database connection closed")
     except Exception as e:
         logger.error(f"Error disconnecting from database: {e}")
+
 
 
 @app.get("/")
@@ -47,3 +46,4 @@ app.include_router(content.router, prefix="/contents", tags=["contents"])
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
+ 

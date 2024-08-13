@@ -9,6 +9,7 @@ class ContentBase(BaseModel):
     """
     '...' means that field is required
     """
+    id: str = Field(..., examples="https://instanvi.com?90ou278w-date")
     source_id: int = Field(..., example="1")
     title: str = Field(..., example="The macth of today")
     body: str = Field(..., example="The macth of today ...")
@@ -34,7 +35,6 @@ class  ContentUpdate(BaseModel):
 
 # ContentInDBBase inherits from ContentBase and has additional fields for data from DB
 class ContentInDBBase(ContentBase):
-    id: int
     last_fetched: datetime
     published_at: datetime
 

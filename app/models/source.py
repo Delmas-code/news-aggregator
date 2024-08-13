@@ -25,7 +25,6 @@ class Source(Base):
     last_fetched = Column(DateTime, default=datetime.utcnow)
     frequency = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
-    last_build_date = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     
@@ -50,4 +49,4 @@ class Source(Base):
     
     def __repr__(self):
         """Return a string representation of the source"""
-        return f"<Source={self.name}, Type={self.type}>"
+        return f"Source[{self.name}, Type={self.type}]>"

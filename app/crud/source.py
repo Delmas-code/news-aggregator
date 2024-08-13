@@ -9,16 +9,17 @@ async def get_source(db: AsyncSession, source_id: int):
 
 
 # modify to filter by given fields if any
-async def get_sources(db: AsyncSession, skip: int=2, limit: int =1, field : str = None, value: str = None):
+async def get_sources(db: AsyncSession, skip: int=0, limit: int = 10, field : str = None, value: str = None):
     try:
         if field:
             if field == "type":
-                stmt = select(Source).where(getattr(Source, field) == value)
+                stmt = select(Source).where(getattr(Source, field) == value).offset(skip).limit(limit)
             else:
-                stmt = select(Source).where(getattr(Source, field).contains(value.lower()))
+                stmt = select(Source).where(getattr(Source, field).contains(value)).offset(skip).limit(limit)
             result = await db.execute(stmt)
         else:   
             result = await db.execute(select(Source).offset(skip).limit(limit))
+            
         return True, result.scalars().all()
     
     except Exception as e:

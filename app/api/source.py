@@ -30,7 +30,7 @@ async def create_source(
 #  not just by the id
 # but also byt other fields
 
-@router.get("/", response_model=List[schema_source.Source])
+@router.get("/")
 async def get_sources(
     *,
     field: Optional[str] = None,
@@ -49,13 +49,12 @@ async def get_sources(
             raise HTTPException(status_code=404, detail=f"Provided field, {field} is not found")  
 
     status, sources = await crud_source.get_sources(db, skip, limit, field, value)
-
-    print(sources)
     
     if not status:
         raise HTTPException(status_code=404, detail=f"No such record found: {sources}")  
 
     return sources 
+
 
 @router.get("/{source_id}", response_model=schema_source.Source)
 async def get_source(source_id: int, db: AsyncSession = Depends(get_db)):
