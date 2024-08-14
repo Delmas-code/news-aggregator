@@ -49,8 +49,6 @@ async def get_contents(
             raise HTTPException(status_code=404, detail=f"Provided field, {field} is not found")  
 
     status, contents = await crud_content.get_contents(db, skip, limit, field, value)
-
-    print(contents)
     
     if not status:
         raise HTTPException(status_code=404, detail=f"No such record found: {contents}")  
@@ -58,7 +56,7 @@ async def get_contents(
     return contents 
 
 @router.get("/{content_id}", response_model=schema_content.Content)
-async def get_content(content_id: int, db: AsyncSession = Depends(get_db)):
+async def get_content(content_id: str, db: AsyncSession = Depends(get_db)):
     content = await crud_content.get_content(db, content_id)
     if content is None:
         raise HTTPException(status_code=404, detail="content not found")
@@ -67,7 +65,7 @@ async def get_content(content_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.patch("/{content_id}", response_model=schema_content.Content, status_code=200)
 async def update_content(
-    content_id: int,
+    content_id: str,
     content: schema_content.ContentUpdate,
     db: AsyncSession = Depends(get_db),
 ):
@@ -76,7 +74,7 @@ async def update_content(
 
 
 @router.delete("/{content_id}", response_model=schema_content.Content)
-async def delete_content(content_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_content(content_id: str, db: AsyncSession = Depends(get_db)):
     deleted_content = await crud_content.delete_content(db, content_id)
     return deleted_content
 

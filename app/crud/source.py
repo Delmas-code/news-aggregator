@@ -8,18 +8,24 @@ async def get_source(db: AsyncSession, source_id: int):
     return result.scalars().first()
 
 
-# modify to filter by given fields if any
-async def get_sources(db: AsyncSession, skip: int=0, limit: int = 10, field : str = None, value: str = None):
+async def get_sources(db: AsyncSession, skip: int=0, limit: int = 10):
+    result = await db.execute(select(Source).offset(skip).limit(limit))    
+    return result.scalars().all()
+    
+
+# Function to filter by given fields if 
+async def get_filtered_sources(db: AsyncSession,  field: str, value , skip: int=0, limit: int = 10):
     try:
-        if field:
-            if field == "type":
-                stmt = select(Source).where(getattr(Source, field) == value).offset(skip).limit(limit)
-            else:
-                stmt = select(Source).where(getattr(Source, field).contains(value)).offset(skip).limit(limit)
-            result = await db.execute(stmt)
+        if field == "type":
+            condition = getattr(Source, field) == value
+            stmt = select(Source).where(condition).offset(skip).limit(limit)
+        
         else:   
-            result = await db.execute(select(Source).offset(skip).limit(limit))
-            
+            filter_column = getattr(Source, field)
+            condition = filter_column.like(f"%{value}%")
+            stmt = select(Source).filter(condition).offset(skip).limit(limit)
+
+        result = await db.execute(stmt)           
         return True, result.scalars().all()
     
     except Exception as e:
@@ -57,12 +63,12 @@ async def delete_source(db: AsyncSession, source_id: int):
         raise Exception(f"source with id {id} not found")
 
 
-async def delete_source(db: AsyncSession, source_id: int):
-    db_source = await get_source(db, source_id)
+async def delete_sources(db: AsyncSession):
+    db_source = await get_sources(db)
     if db_source:
         await db.delete(db_source)
         await db.commit()
         await db.close()
         return db_source
     else:
-        raise Exception(f"source with id {id} not found")
+        raise Exception(f"Error deleting all the sources")

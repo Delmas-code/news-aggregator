@@ -15,7 +15,7 @@ class ContentBase(BaseModel):
     body: str = Field(..., example="The macth of today ...")
     url: str = Field(..., example="https://instanvi.com")
     type: ContentType = Field(..., example=ContentType.Text)
-    image_url: str = Field(None, examples="https://benevenite.com/wp-content/uploads/2024/07/cropped-favicon-32x32.jpg")
+    image_url: Optional[str] = Field(None, examples="https://benevenite.com/wp-content/uploads/2024/07/cropped-favicon-32x32.jpg")
 
 
 # # ContentCreate inherits from ContentBase since it has the same fields

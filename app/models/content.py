@@ -24,7 +24,7 @@ class Content(Base):
     title = Column(String, unique=True, index=True, nullable=False)
     body = Column(Text, unique=True, index=True, nullable=False)
     url = Column(String, index=True, nullable=False)
-    image_url = Column(String, nullable=True)
+    image_url = Column(String, nullable=True, default=None)
     type = Column(Enum(ContentType), nullable=False, index=True, default="Text")
     published_at = Column(DateTime, index=True, nullable=False, default=func.now())
     last_fetched = Column(DateTime, nullable=False, default=datetime.utcnow(), onupdate=func.now())    
