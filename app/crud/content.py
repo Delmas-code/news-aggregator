@@ -36,7 +36,7 @@ async def get_filtered_contents(db: AsyncSession,  field: str, value, skip: int=
         return False, e
 
 """Get a column, adding this for the ids"""
-async def get_content_by_column(db: AsyncSession, field, limit: int = None, skip : int = 0, cond_field = None, cond_value = None):
+async def get_specific_column(db: AsyncSession, field, limit: int = None, skip : int = 0, cond_field = None, cond_value = None):
     if cond_field and cond_value:
         stmt = select(getattr(Content, field)).where(getattr(Content, cond_field) == cond_value).offset(skip).limit(limit)   
     else:

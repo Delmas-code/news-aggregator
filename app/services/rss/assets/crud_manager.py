@@ -19,7 +19,7 @@ async def get_sources_in_batch(limit: int = 10, field="type", value="RSS"):
         async for db_session in get_db():
             while True:
                 # Perform the fetch operation
-                status, batch = await source_crud.get_sources(db_session, skip=offset, limit=limit, field=field, value=value)
+                status, batch = await source_crud.get_filtered_sources(db_session, field=field, value=value, skip=offset, limit=limit)
 
                 if not status or len(batch) == 0:
                     break
@@ -42,7 +42,7 @@ async def create_item(item : ContentCreate):
 async def get_source_item_ids(source_id: int, limit : int = None):
     try:
         async for db_session in get_db():
-            result = await content_crud.get_content_column(db=db_session, field="id", cond_field="source_id", cond_value=source_id)
+            result = await content_crud.get_specific_column(db=db_session, field="id", cond_field="source_id", cond_value=source_id)
             
             return result
     except Exception as ex:
