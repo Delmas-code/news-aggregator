@@ -42,7 +42,7 @@ async def create_item(item : ContentCreate):
 async def get_source_item_ids(source_id: int, limit : int = None):
     try:
         async for db_session in get_db():
-            result = await content_crud.get_content_by_column(db=db_session, field="id", cond_field="source_id", cond_value=source_id)
+            result = await content_crud.get_content_column(db=db_session, field="id", cond_field="source_id", cond_value=source_id)
             
             return result
     except Exception as ex:

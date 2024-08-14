@@ -32,28 +32,35 @@ async def create_content(
 
 @router.get("/", response_model=List[schema_content.Content])
 async def get_contents(
-    *,
     field: Optional[str] = None,
-    value: Optional[str] = None,
+    value = None,
     skip: int = 0, 
     limit: int = 10, 
     db: AsyncSession = Depends(get_db),
-): 
-    # Create an array of all the model fields
-    
+):     
     if field:
-        field = field.lower()
-        model_fields = {key: value for key, value in schema_content.Content.__dict__.items() if not key.startswith('__')}['model_fields'].keys()
-        
-        if field not in model_fields:
-            raise HTTPException(status_code=404, detail=f"Provided field, {field} is not found")  
+        return await get_by_fields(db, skip, limit, field, value)
 
-    status, contents = await crud_content.get_contents(db, skip, limit, field, value)
+    return await crud_content.get_contents(db, skip, limit) 
+
+
+# Function to handle optional fields
+async def get_by_fields(db: AsyncSession, skip: int, limit: int, field: str, value):
+    field = field.lower()
+    # Create an array of all the model fields
+    model_dict = schema_content.Content.__dict__.items()
+    model_fields = {key: value for key, value in model_dict if not key.startswith('__')}
+    model_fields = model_fields['model_fields'].keys()
     
+    if field not in model_fields:
+        raise HTTPException(status_code=404, detail=f"Provided field, {field} is not found")  
+    
+    status, contents = await crud_content.get_filtered_contents(db, field, value, skip, limit)
     if not status:
         raise HTTPException(status_code=404, detail=f"No such record found: {contents}")  
 
-    return contents 
+    return contents
+
 
 @router.get("/{content_id}", response_model=schema_content.Content)
 async def get_content(content_id: str, db: AsyncSession = Depends(get_db)):

@@ -16,12 +16,12 @@ async def get_sources(db: AsyncSession, skip: int=0, limit: int = 10):
 # Function to filter by given fields if 
 async def get_filtered_sources(db: AsyncSession,  field: str, value , skip: int=0, limit: int = 10):
     try:
-        if field == "type":
-            condition = getattr(Source, field) == value
-            stmt = select(Source).where(condition).offset(skip).limit(limit)
+        filter_column = getattr(Source, field)
         
+        if field == "type":
+            condition = filter_column == value
+            stmt = select(Source).where(condition).offset(skip).limit(limit)
         else:   
-            filter_column = getattr(Source, field)
             condition = filter_column.like(f"%{value}%")
             stmt = select(Source).filter(condition).offset(skip).limit(limit)
 

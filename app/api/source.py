@@ -40,14 +40,15 @@ async def get_sources(
 ):   
     """handle the inputed fields"""
     if field:
-       return await get_sources_by_fields(db, skip, limit, field, value)
+       return await get_by_fields(db, skip, limit, field, value)
 
     return await crud_source.get_sources(db, skip, limit)
 
 
 # Function to handle optional fields
-async def get_sources_by_fields(db: AsyncSession, skip: int, limit: int, field: str, value):
+async def get_by_fields(db: AsyncSession, skip: int, limit: int, field: str, value):
 
+    field = field.lower()
     # Create an array of all the model fields
     model_dict = schema_source.Source.__dict__.items()
     model_fields = {key: value for key, value in model_dict if not key.startswith('__')}
@@ -90,5 +91,5 @@ async def delete_source(source_id: int, db: AsyncSession = Depends(get_db)):
 # Delete all sources
 @router.delete("/", response_model=schema_source.Source)
 async def delete_source(db: AsyncSession = Depends(get_db)):
-    deleted_source = await crud_source.delete_source(db, source_id)
-    return deleted_source
+    deleted_sources = await crud_source.delete_sources(db)
+    return deleted_sources

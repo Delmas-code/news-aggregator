@@ -11,23 +11,29 @@ async def get_content(db: AsyncSession, content_id: int):
 # modify to filter by given fields and values, if any
 
 async def get_contents(db: AsyncSession, skip: int = 0, limit: int =10, field : str = None, value: str = None):
+    result = await db.execute(select(Content).offset(skip).limit(limit))
+    return result.scalars().all()
+
+
+# Function to filter by given fields if 
+async def get_filtered_contents(db: AsyncSession,  field: str, value, skip: int=0, limit: int = 10):
     try:
-        if field and value:
-            value = int(value) if field == "source_id" else value
-            if field == "type" or field == "source_id":
-                stmt = select(Content).where(getattr(Content, field) == value).limit(limit).offset(skip)
-            else:
-                stmt = select(Content).where(getattr(Content, field) == value.lower()).offset(skip).limit(limit)
-            result = await db.execute(stmt)
-        else:  
-            result = await db.execute(select(Content).offset(skip).limit(limit))
+        value = int(value) if field == "source_id" else value.lower()
+        filter_column = getattr(Content, field)
         
-        result = result.scalars().all()
-        return True, result
+        if field == "type" or field == "source_id":
+            condition = filter_column == value
+            stmt = select(Content).where(condition).limit(limit).offset(skip)
+        
+        else:
+            condition = getattr(Content, field) == value.lower()
+            stmt = select(Content).where(condition).offset(skip).limit(limit)
+
+        result = await db.execute(stmt)
+        return True, result.scalars().all()
     
     except Exception as e:
         return False, e
-
 
 """Get a column, adding this for the ids"""
 async def get_content_by_column(db: AsyncSession, field, limit: int = None, skip : int = 0, cond_field = None, cond_value = None):
