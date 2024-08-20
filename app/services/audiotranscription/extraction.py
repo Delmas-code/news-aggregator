@@ -10,9 +10,6 @@ class ContentAnalyzer:
     def extract_title_and_body(self, transcription: str) -> tuple:
         """
         Extracts a suitable title and body from the transcribed text using spaCy NLP.
-        
-        :param transcription: The transcribed text.
-        :return: A tuple containing the title and body.
         """
         # Process the transcription with spaCy
         doc = self.nlp(transcription)
@@ -38,8 +35,6 @@ class ContentAnalyzer:
         """
         Determines the type of the URL by checking the MIME type of the content.
         
-        :param url: The URL to check.
-        :return: The type of the content (e.g., 'text', 'audio', 'video', 'unknown').
         """
         response = requests.head(url)
         

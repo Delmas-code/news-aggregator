@@ -1,14 +1,16 @@
-import json, os, feedparser, datetime, lxml, asyncio, sys
+import os, feedparser, datetime, lxml, asyncio, sys
 current_dir = os.getcwd()
 sys.path.append(current_dir)
 
 from bs4 import BeautifulSoup
-from app.services.assets.crud_manager import get_sources_in_batch, create_item, get_source_item_ids
+from app.services.assets.crud_manager import ( 
+    get_sources_in_batch, 
+    create_item, 
+    get_source_item_ids
+)
 from loguru import logger
 from app.schemas.content import ContentCreate
 
-
-current_file_path = os.path.abspath(__file__)
 
 class ProcessFeed:
     def __init__(self, url: str, source_id: int, source_contents: list) -> None:
@@ -20,6 +22,7 @@ class ProcessFeed:
         MAX_TRIES = 3
         TRIAL = 1
         isOkay = False
+
         try:
             while not isOkay:
                 self.feed = feedparser.parse(self.url)
@@ -56,7 +59,6 @@ class ProcessFeed:
 
             """Check for the validity of the content_id"""
             if content_id in self.source_contents:
-                print(f'\n {content_id} already exists\n')
                 continue
             content_dict['id'] = content_id
             content_dict['source_id'] = self.source_id
@@ -109,12 +111,6 @@ class ProcessFeed:
 
         return img_url
         
-
-"""A momentary method for saving all the sources"""
-def saveSources(data):
-    with open(os.path.join(current_file_path, '..', 'assets', 'sources.json'), "a") as fp:
-        json.dump(data, fp, indent=4)
-        fp.close()
 
 async def main():
     async for batch in get_sources_in_batch(10,):

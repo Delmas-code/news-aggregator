@@ -3,7 +3,11 @@ current_dir = os.getcwd()
 sys.path.append(current_dir)
 
 from dotenv import load_dotenv
-from app.services.assets.crud_manager import get_sources_in_batch, create_item, get_source_item_ids
+from app.services.assets.crud_manager import (
+    get_sources_in_batch, 
+    create_item, 
+    get_source_item_ids
+)
 from loguru import logger
 import assemblyai as aai
 from extraction import ContentAnalyzer
@@ -16,13 +20,8 @@ class AssemblyAIHelper:
         aai.settings.api_key = api_key
         self.transcriber = aai.Transcriber()
 
-    def transcribe(self, file_url, speaker_labels=False, auto_highlights=False):
-        config = aai.TranscriptionConfig(
-            speaker_labels=speaker_labels,
-            auto_highlights=auto_highlights
-        )
-
-        transcript = self.transcriber.transcribe(file_url, config=config)
+    def transcribe(self, file_url):
+        transcript = self.transcriber.transcribe(file_url)
 
         if transcript.status == aai.TranscriptStatus.error:
             logger.error(f"Error transcribing {file_url}: {transcript.error}")
