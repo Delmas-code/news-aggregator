@@ -9,11 +9,13 @@ from app.crud import content as content_crud
 from loguru import logger
 from app.schemas.content import ContentCreate
 
+
 async def get_db() -> AsyncSession:
     async with async_session() as session:
         yield session
 
 async def get_sources_in_batch(limit: int = 10, field="type", value="RSS"):
+
     try:
         offset = 0
         async for db_session in get_db():
@@ -28,7 +30,7 @@ async def get_sources_in_batch(limit: int = 10, field="type", value="RSS"):
                 offset += limit
 
     except Exception as ex:
-        logger.error(f"There is an error: {ex}") 
+        logger.error(f"There is a source fetch error: {ex}") 
 
 async def create_item(item : ContentCreate):
     try:
@@ -37,7 +39,8 @@ async def create_item(item : ContentCreate):
             return created_item
     
     except Exception as ex:
-        logger.error(f"There is an error: {ex}") 
+        logger.error(f"There is a create item error: {ex}") 
+        return None
 
 async def get_source_item_ids(source_id: int, limit : int = None):
     try:
@@ -46,4 +49,5 @@ async def get_source_item_ids(source_id: int, limit : int = None):
             
             return result
     except Exception as ex:
-        logger.error(f"There is an error: {ex}") 
+        logger.error(f"There is an id fetch error: {ex}") 
+        return None

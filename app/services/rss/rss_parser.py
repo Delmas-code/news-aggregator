@@ -3,7 +3,7 @@ current_dir = os.getcwd()
 sys.path.append(current_dir)
 
 from bs4 import BeautifulSoup
-from app.services.rss.assets.crud_manager import get_sources_in_batch, create_item, get_source_item_ids
+from app.services.assets.crud_manager import get_sources_in_batch, create_item, get_source_item_ids
 from loguru import logger
 from app.schemas.content import ContentCreate
 
@@ -17,14 +17,25 @@ class ProcessFeed:
         self.source_contents = source_contents
 
     async def launch(self):
+        MAX_TRIES = 3
+        TRIAL = 1
+        isOkay = False
         try:
-            self.feed = feedparser.parse(self.url)
-
-            if self.feed.bozo:
+            while not isOkay:
+                self.feed = feedparser.parse(self.url)
+                if self.feed.bozo:
+                    if TRIAL == MAX_TRIES and not isOkay:
+                        break
+                else:
+                    isOkay = True   
+                TRIAL = TRIAL + 1
+            
+            if not isOkay:
                 logger.error(self.feed.bozo_exception)
-            else:
+            else:    
                 await self.save_content()
             return
+
         except Exception as e:
             logger.error(f"Something went wrong: {e}")
     
@@ -34,8 +45,9 @@ class ProcessFeed:
 
             new_item = ContentCreate(**item)
             created_item = await create_item(new_item)
-
-            logger.success(f"item created sucessfully: {item['id'], item['title'], self.source_id}")
+  
+            if created_item is not None:
+                logger.success(f"item created sucessfully: {created_item, self.source_id}")
         
     async def analyze_feed(self):
         for entry in self.feed.entries:
@@ -44,6 +56,7 @@ class ProcessFeed:
 
             """Check for the validity of the content_id"""
             if content_id in self.source_contents:
+                print(f'\n {content_id} already exists\n')
                 continue
             content_dict['id'] = content_id
             content_dict['source_id'] = self.source_id
@@ -111,6 +124,8 @@ async def main():
 
             """Get all the children ids of each source in the batch"""
             ids = await get_source_item_ids(item['id'])
+            if ids is None:
+                return
 
             """Process the feed based on the ite url"""
             feed = ProcessFeed(item['url'], item['id'], ids)
@@ -118,3 +133,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+    

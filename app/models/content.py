@@ -3,6 +3,7 @@ from ..core.database import Base
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from enum import Enum as PyEnum
+import uuid
 
 
 class ContentType(PyEnum):
@@ -11,6 +12,8 @@ class ContentType(PyEnum):
     Audio = "Audio"
     Video = "Video"
 
+def generate_key():
+    return str(uuid.uuid4())
 
 class Content(Base):
     """News article/content model."""
@@ -19,33 +22,32 @@ class Content(Base):
     # A content, based on the rss feed
     # has a guid and a pub date that can uniquely identify it.
 
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_key, index=True)
     source_id = Column(Integer, ForeignKey("sources.id"))
-    title = Column(String, unique=True, index=True, nullable=False)
-    body = Column(Text, unique=True, index=True, nullable=False)
-    url = Column(String, index=True, nullable=False)
+    title = Column(String, unique=True, nullable=False)
+    body = Column(String, nullable=False)
+    url = Column(String, unique=True, nullable=False)
     image_url = Column(String, nullable=True, default=None)
-    type = Column(Enum(ContentType), nullable=False, index=True, default="Text")
-    published_at = Column(DateTime, index=True, nullable=False, default=func.now())
+    type = Column(Enum(ContentType), nullable=False, default="Text")
+    published_at = Column(DateTime, nullable=False, default=func.now())
     last_fetched = Column(DateTime, nullable=False, default=datetime.utcnow(), onupdate=func.now())    
     sentiment = Column(String)
     Tags = Column(ARRAY(String))
     transcription = Column(Text)
     
     # How to implement the methods
-    async def fetch_content(self) -> list:
-        """call the fetch service here"""
+
+    async def analyze_sentiment(self):
+        """call the analyze service here"""
         pass
-    async def parse_content(self):
-        """Parse content"""
+    async def categorize_content(self, category):
+        """categorize content"""
         pass
-    async def update_frequency(self, frequency) -> None:
-        """update frequency"""
+    async def save_content(self, content) -> None:
+        """save content"""
         pass
-    async def update_last_fetched(self, new_fetch_time) -> None:
-        """update last fetched"""
-        pass
-    def validate_content(self):
+    async def flag_content(self, flag) -> None:
+        """flag the content"""
         pass
     
     def __repr__(self):

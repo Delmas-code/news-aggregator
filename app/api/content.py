@@ -39,13 +39,13 @@ async def get_contents(
     db: AsyncSession = Depends(get_db),
 ):     
     if field:
-        return await get_by_fields(db, skip, limit, field, value)
+        return await get_by_fields(db, field, value, skip, limit)
 
     return await crud_content.get_contents(db, skip, limit) 
 
 
 # Function to handle optional fields
-async def get_by_fields(db: AsyncSession, skip: int, limit: int, field: str, value):
+async def get_by_fields(db: AsyncSession, field: str, value, skip: int, limit: int):
     field = field.lower()
     # Create an array of all the model fields
     model_dict = schema_content.Content.__dict__.items()
@@ -64,7 +64,8 @@ async def get_by_fields(db: AsyncSession, skip: int, limit: int, field: str, val
 
 @router.get("/{content_id}", response_model=schema_content.Content)
 async def get_content(content_id: str, db: AsyncSession = Depends(get_db)):
-    content = await crud_content.get_content(db, content_id)
+
+    content = await get_by_fields(db, field = "id", value = content_id, skip = 0, limit = 10)
     if content is None:
         raise HTTPException(status_code=404, detail="content not found")
     return content
