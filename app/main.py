@@ -5,8 +5,8 @@ from app.core.database import (
     disconnect_from_database,
     init_db
 )
-from app.services.rss import rss_parser
-from app.api import source, content
+
+from app.api import source, content, webhook
 from loguru import logger
 
 import uvicorn
@@ -36,13 +36,13 @@ async def shutdown() -> None:
         logger.error(f"Error disconnecting from database: {e}")
 
 
-
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
 
 app.include_router(source.router, prefix="/sources", tags=["sources"])
 app.include_router(content.router, prefix="/contents", tags=["contents"])
+app.include_router(webhook.router, prefix="/webhooks", tags=['webhooks'])
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

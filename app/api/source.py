@@ -28,32 +28,40 @@ async def create_source(
 
 # Add some optional params, such that the source can be filtered,
 #  not just by the id
-# but also byt other fields
+# but also by other fields
 
 @router.get("/")
 async def get_sources(
-    *,
     field: Optional[str] = None,
-    value: Optional[str] = None,
+    value = None,
     skip: int = 0, 
     limit: int = 10, 
     db: AsyncSession = Depends(get_db),
-): 
-    # Create an array of all the model fields
-    
+):   
+    """handle the inputed fields"""
     if field:
-        field = field.lower()
-        model_fields = {key: value for key, value in schema_source.Source.__dict__.items() if not key.startswith('__')}['model_fields'].keys()
-        
-        if field not in model_fields:
-            raise HTTPException(status_code=404, detail=f"Provided field, {field} is not found")  
+       return await get_by_fields(db, skip, limit, field, value)
 
-    status, sources = await crud_source.get_sources(db, skip, limit, field, value)
+    return await crud_source.get_sources(db, skip, limit)
+
+
+# Function to handle optional fields
+async def get_by_fields(db: AsyncSession, skip: int, limit: int, field: str, value):
+
+    field = field.lower()
+    # Create an array of all the model fields
+    model_dict = schema_source.Source.__dict__.items()
+    model_fields = {key: value for key, value in model_dict if not key.startswith('__')}
+    model_fields = model_fields['model_fields'].keys()
     
+    if field not in model_fields:
+        raise HTTPException(status_code=404, detail=f"Provided field, {field} is not found")  
+    
+    status, sources = await crud_source.get_filtered_sources(db, field, value, skip, limit)
     if not status:
         raise HTTPException(status_code=404, detail=f"No such record found: {sources}")  
 
-    return sources 
+    return sources
 
 
 @router.get("/{source_id}", response_model=schema_source.Source)
@@ -83,5 +91,5 @@ async def delete_source(source_id: int, db: AsyncSession = Depends(get_db)):
 # Delete all sources
 @router.delete("/", response_model=schema_source.Source)
 async def delete_source(db: AsyncSession = Depends(get_db)):
-    deleted_source = await crud_source.delete_source(db, source_id)
-    return deleted_source
+    deleted_sources = await crud_source.delete_sources(db)
+    return deleted_sources

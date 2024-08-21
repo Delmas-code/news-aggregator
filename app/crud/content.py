@@ -7,38 +7,53 @@ async def get_content(db: AsyncSession, content_id: int):
     result = await db.execute(select(Content).where(Content.id == content_id))
     return result.scalars().first()
 
+# modify to filter by given fields and values, if any
+async def get_contents(db: AsyncSession, skip: int = 0, limit: int =10, field : str = None, value: str = None):
+    result = await db.execute(select(Content).offset(skip).limit(limit))
+    return result.scalars().all()
 
-# modify to filter by given fields if any
-async def get_contents(db: AsyncSession, skip: int=2, limit: int =1, field : str = None, value: str = None):
+
+# Function to filter by given fields if 
+async def get_filtered_contents(db: AsyncSession,  field: str, value, skip: int=0, limit: int = 10):
     try:
-        if field:
-            if field == "type":
-                stmt = select(Content).where(getattr(Content, field) == value).limit(limit).offset(skip)
-            else:
-                stmt = select(Content).where(getattr(Content, field) == value.lower()).offset(skip).limit(limit)
-            result = await db.execute(stmt)
-        else:  
-            result = await db.execute(select(Content).offset(skip).limit(limit))
+        value = int(value) if field == "source_id" else value.lower()
+        filter_column = getattr(Content, field)
         
-        result = result.scalars().all()
-        return True, result
+        if field == "type" or field == "source_id":
+            condition = filter_column == value
+            stmt = select(Content).where(condition).limit(limit).offset(skip)
+        
+        else:
+            condition = filter_column.ilike(f"%{value}%")
+            stmt = select(Content).where(condition).offset(skip).limit(limit)
+
+        result = await db.execute(stmt)
+        return True, result.scalars().all()
     
     except Exception as e:
         return False, e
 
+"""Get a column, adding this for the ids"""
+async def get_specific_column(db: AsyncSession, field, limit: int = None, skip : int = 0, cond_field = None, cond_value = None):
+    filter_column = getattr(Content, field)
+    if cond_field and cond_value:
+        stmt = select(filter_column).where(getattr(Content, cond_field) == cond_value).offset(skip).limit(limit)   
+    else:
+        stmt = select(filter_column).offset(skip).limit(limit)
+    result = await db.execute(stmt)
+    
+    return result.scalars().all()
 
 async def create_content(db: AsyncSession, content: ContentCreate):
-    print(type(content))
     db_content = Content(**content.dict())
     db.add(db_content)
     await db.commit()
     await db.close()
 
-    print("Item has been created successfully")
     return db_content
 
 
-async def update_content(db: AsyncSession, content_id: int, content: ContentUpdate):
+async def update_content(db: AsyncSession, content_id: str, content: ContentUpdate):
     db_content = await get_content(db, content_id)
     if db_content:
         for key, value in Content.dict().items():
@@ -50,7 +65,7 @@ async def update_content(db: AsyncSession, content_id: int, content: ContentUpda
         raise Exception(f"content with id {id} not found")
 
 
-async def delete_content(db: AsyncSession, content_id: int):
+async def delete_content(db: AsyncSession, content_id: str):
     db_content = await get_content(db, content_id)
     if db_content:
         await db.delete(db_content)
