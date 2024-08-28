@@ -48,7 +48,7 @@ class ProcessFeed:
 
             new_item = ContentCreate(**item)
             created_item = await create_item(new_item)
-  
+            
             if created_item is not None:
                 logger.success(f"item created sucessfully: {created_item, self.source_id}")
         
@@ -112,7 +112,7 @@ class ProcessFeed:
         return img_url
         
 
-async def main():
+async def main(source_url: str):
     async for batch in get_sources_in_batch(10,):
         batch = [{**record.__dict__} for record in batch]
 

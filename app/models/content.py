@@ -2,7 +2,11 @@ from sqlalchemy import Column, Integer, String, Text, ARRAY, DateTime, Enum, For
 from ..core.database import Base
 from datetime import datetime
 from enum import Enum as PyEnum
+from sqlalchemy.orm import relationship
 import uuid
+from .notification import Notification
+from .transcription import Transcription
+from .recognition import Recognition
 
 
 class ContentType(PyEnum):
@@ -33,6 +37,15 @@ class Content(Base):
     sentiment = Column(String)
     Tags = Column(ARRAY(String))
     transcription = Column(Text)
+
+    """parent-child relationship with the notification"""
+    contents = relationship("Notification", backref="content")
+
+    """parent-child relationship with the transcription"""
+    contents = relationship("Transcription", backref="content")
+    
+    """parent-child relationship with the recognition"""
+    contents = relationship("Recognition", backref="content")
     
     # How to implement the methods
 

@@ -1,7 +1,14 @@
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.source import Source
+from app.core.database import async_session
 from ..schemas.source import SourceCreate, SourceUpdate
+from loguru import logger
+
+async def get_db() -> AsyncSession:
+    async with async_session() as session:
+        yield session
+
 
 async def get_source(db: AsyncSession, source_id: int):
     result = await db.execute(select(Source).where(Source.id == source_id))
@@ -31,6 +38,20 @@ async def get_filtered_sources(db: AsyncSession,  field: str, value , skip: int=
     except Exception as e:
         return False, e
 
+async def get_sources_in_batch(db: AsyncSession, limit: int = 10):
+    try:
+        offset = 0
+        while True:
+            # Perform the fetch operation
+            status, batch = await get_sources(db, skip=offset, limit=limit)
+            
+            if not status or len(batch) == 0:
+                break
+            yield batch
+            offset += limit
+
+    except Exception as ex:
+        logger.error(f"There is a source fetch error: {ex}") 
 
 async def create_source(db: AsyncSession, source: SourceCreate):
     db_source = Source(**source.dict())
