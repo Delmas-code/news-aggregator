@@ -3,17 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from ..crud import tag as crud_tag
 from ..schemas import tag as schema_tag
-from ..core.database import async_session
+# get a database session
+from ..core.database import get_db
 
 router = APIRouter(
     tags=["tags"],
     responses={404: {"description": "Not found"}},
 )
-
-# get a database session
-async def get_db() -> AsyncSession:
-    async with async_session() as session:
-        yield session
 
 @router.post("/", response_model=schema_tag.Tag, status_code=201)
 async def create_tag(

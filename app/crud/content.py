@@ -1,7 +1,9 @@
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.content import Content
+from app.core.database import async_session
 from ..schemas.content import ContentCreate, ContentUpdate
+
 
 async def get_content(db: AsyncSession, content_id: int):
     result = await db.execute(select(Content).where(Content.id == content_id))
@@ -43,6 +45,12 @@ async def get_specific_column(db: AsyncSession, field, limit: int = None, skip :
     result = await db.execute(stmt)
     
     return result.scalars().all()
+
+
+async def get_source_item_ids(db: AsyncSession, source_id: int, limit : int = None):
+    result = await get_specific_column(db, field="id", cond_field="source_id", cond_value=source_id)
+    
+    return result
 
 async def create_content(db: AsyncSession, content: ContentCreate):
     db_content = Content(**content.dict())

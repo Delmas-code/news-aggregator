@@ -3,17 +3,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from ..crud import webhook as crud_webhook
 from ..schemas import webhook as schema_webhook
-from ..core.database import async_session
+from ..core.database import get_db
 
 router = APIRouter(
     tags=["webhooks"],
     responses={404: {"description": "Not found"}},
 )
-
-# get a database session
-async def get_db() -> AsyncSession:
-    async with async_session() as session:
-        yield session
 
 @router.post("/", response_model=schema_webhook.Webhook, status_code=201)
 async def create_webhook(

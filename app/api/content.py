@@ -3,17 +3,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from ..crud import content as crud_content
 from ..schemas import content as schema_content
-from ..core.database import async_session
+
+# get a database session
+from ..core.database import get_db
 
 router = APIRouter(
     tags=["contents"],
     responses={404: {"description": "Not found"}},
 )
-
-# get a database session
-async def get_db() -> AsyncSession:
-    async with async_session() as session:
-        yield session
 
 @router.post("/", response_model=schema_content.Content, status_code=201)
 async def create_content(

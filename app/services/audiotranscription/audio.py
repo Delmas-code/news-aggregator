@@ -3,15 +3,10 @@ current_dir = os.getcwd()
 sys.path.append(current_dir)
 
 from dotenv import load_dotenv
-from app.services.assets.crud_manager import (
-    get_sources_in_batch, 
-    create_item, 
-    get_source_item_ids
-)
 from loguru import logger
 import assemblyai as aai
-from extraction import ContentAnalyzer
-from app.schemas.content import ContentCreate
+from .extraction import ContentAnalyzer
+from app.schemas.source import Source
 
 load_dotenv()
 
@@ -48,11 +43,10 @@ class AssemblyAIHelper:
 
 
 class ProcessAudio:
-    def __init__(self, text: str, url: str, source_id: int, source_contents: list) -> None:
+    def __init__(self, text: str, url: str, source_id: int) -> None:
         self.text = text
         self.url = url
         self.source_id = source_id
-        self.source_contents = source_contents
 
     async def process_text(self):
         analyzer = ContentAnalyzer()
@@ -63,48 +57,33 @@ class ProcessAudio:
         # Determine the type of the content at the URL
         url_type = analyzer.determine_url_type(self.url)
 
-        # Create a new Content entry
-        new_content = ContentCreate(
-            source_id = self.source_id,
-            title=title,
-            body=body,
-            url=self.url,
-            type=url_type
+        new_content = {
+            "source_id" : self.source_id,
+            "title":title,
+            "body":body,
+            "url":self.url,
+            "type":url_type
+        }
+        return new_content
+        
+
+async def main(source: Source):
+
+    """Process the audio based on the source url"""
+    api_key = os.getenv("API_KEY")
+    assembly_ai = AssemblyAIHelper(api_key=api_key)
+    transcription_text = assembly_ai.transcribe(source['url'])
+
+    if not transcription_text:
+        logger.error(f"Transcription failed for {source['url']}")
+        return
+    else:
+        """Process the transcribed text"""
+        audio = ProcessAudio(
+            text = transcription_text, 
+            url = source['url'], 
+            source_id = source['id']
         )
+        return await audio.process_text()
 
-        # Save the content to the database  
-        created_item = await create_item(new_content)
-        if created_item is not None:
-            logger.success(f"item created sucessfully: {created_item, self.source_id}")
-
-
-async def main():
-    async for batch in get_sources_in_batch(10, field="type", value="Audio"):
-        batch = [{**record.__dict__} for record in batch]
-
-        for item in batch:
-            """Get all the children ids of each source in the batch"""
-            ids = await get_source_item_ids(item['id'])
-
-            """Process the audio based on the source url"""
-            api_key = os.getenv("API_KEY")
-            assembly_ai = AssemblyAIHelper(api_key=api_key)
-            transcription_text = assembly_ai.transcribe(item['url'])
-
-            if not transcription_text:
-                logger.error(f"Transcription failed for {item['url']}")
-                return
-            else:
-                """Process the trnascribed text"""
-                audio = ProcessAudio(
-                    text = transcription_text, 
-                    url = item['url'], 
-                    source_id = item['id'], 
-                    source_contents = ids
-                )
-                await audio.process_text()
-
-
-if __name__ == '__main__':
-    asyncio.run(main())
 

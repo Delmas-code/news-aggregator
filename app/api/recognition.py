@@ -3,17 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from ..crud import recognition as crud_recognition
 from ..schemas import recognition as schema_recognition
-from ..core.database import async_session
+# get a database session
+from ..core.database import get_db
 
 router = APIRouter(
     tags=["recognitions"],
     responses={404: {"description": "Not found"}},
 )
-
-# get a database session
-async def get_db() -> AsyncSession:
-    async with async_session() as session:
-        yield session
 
 @router.post("/", response_model=schema_recognition.Recognition, status_code=201)
 async def create_recognition(

@@ -1,15 +1,12 @@
-import os, feedparser, datetime, lxml, asyncio, sys
+import os, feedparser, datetime, lxml, sys
 current_dir = os.getcwd()
 sys.path.append(current_dir)
 
 from bs4 import BeautifulSoup
-from app.services.assets.crud_manager import ( 
-    get_sources_in_batch, 
-    create_item, 
-    get_source_item_ids
-)
 from loguru import logger
-from app.schemas.content import ContentCreate
+from app.schemas.source import Source
+from app.crud.content import get_source_item_ids
+from app.core.database import get_db
 
 
 class ProcessFeed:
@@ -31,28 +28,21 @@ class ProcessFeed:
                         break
                 else:
                     isOkay = True   
-                TRIAL = TRIAL + 1
-            
+                TRIAL = TRIAL + 1    
             if not isOkay:
                 logger.error(self.feed.bozo_exception)
-            else:    
-                await self.save_content()
-            return
+                return None  
+              
+            contents = await self.analyze_feed()
+            return contents
 
         except Exception as e:
             logger.error(f"Something went wrong: {e}")
-    
-    async def save_content(self):
-        async for item in self.analyze_feed():
-            # create a db session add item to the 
+            return None
 
-            new_item = ContentCreate(**item)
-            created_item = await create_item(new_item)
-            
-            if created_item is not None:
-                logger.success(f"item created sucessfully: {created_item, self.source_id}")
-        
     async def analyze_feed(self):
+        items = []
+
         for entry in self.feed.entries:
             content_dict = {}
             content_id = entry['id'] +'_'+ str(datetime.datetime(*entry['published_parsed'][:7])).replace(' ', '_')
@@ -71,7 +61,9 @@ class ProcessFeed:
                 continue
             content_dict['image_url'] = await self.search_image(entry)
 
-            yield content_dict
+            items.append(content_dict)
+        
+        return items
 
     async def generate_body(self, entry): 
         description = None
@@ -112,21 +104,15 @@ class ProcessFeed:
         return img_url
         
 
-async def main(source_url: str):
-    async for batch in get_sources_in_batch(10,):
-        batch = [{**record.__dict__} for record in batch]
+async def main(source: Source):
 
-        for item in batch:
+    """Get all the children ids of each source in the batch"""
+    async for db_session in get_db():
+        ids = await get_source_item_ids(db = db_session, source_id = source['id'])
+        if ids is None:
+            return
+        
+        """Process the feed based on the ite url"""
+        feed = ProcessFeed(source['url'], source['id'], ids)
+        return await feed.launch()  
 
-            """Get all the children ids of each source in the batch"""
-            ids = await get_source_item_ids(item['id'])
-            if ids is None:
-                return
-
-            """Process the feed based on the ite url"""
-            feed = ProcessFeed(item['url'], item['id'], ids)
-            await feed.launch()   
-
-if __name__ == "__main__":
-    asyncio.run(main())
-    
