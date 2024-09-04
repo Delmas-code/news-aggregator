@@ -21,6 +21,7 @@ class ContentAnalyzer:
         else:
             title = "Untitled"
 
+
         # Alternatively, extract a title based on noun chunks or entities
         if not title or len(title) < 5:  # Arbitrary length check for quality title
             noun_chunks = [chunk.text for chunk in doc.noun_chunks]

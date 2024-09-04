@@ -7,12 +7,10 @@ async def get_source(db: AsyncSession, source_id: int):
     result = await db.execute(select(Source).where(Source.id == source_id))
     return result.scalars().first()
 
-
 async def get_sources(db: AsyncSession, skip: int=0, limit: int = 10):
     result = await db.execute(select(Source).offset(skip).limit(limit))    
     return result.scalars().all()
     
-
 # Function to filter by given fields if 
 async def get_filtered_sources(db: AsyncSession,  field: str, value , skip: int=0, limit: int = 10):
     try:
@@ -31,6 +29,17 @@ async def get_filtered_sources(db: AsyncSession,  field: str, value , skip: int=
     except Exception as e:
         return False, e
 
+async def get_sources_in_batch(db: AsyncSession, limit: int = 10):
+    offset = 0
+    while True:
+        # Perform the fetch operation
+        batch = await get_sources(db, skip=offset, limit=limit)
+        
+        if len(batch) == 0:
+            break
+        yield batch
+        offset += limit
+
 
 async def create_source(db: AsyncSession, source: SourceCreate):
     db_source = Source(**source.dict())
@@ -38,7 +47,6 @@ async def create_source(db: AsyncSession, source: SourceCreate):
     await db.commit()
     await db.close()
     return db_source
-
 
 async def update_source(db: AsyncSession, source_id: int, source: SourceUpdate):
     db_source = await get_source(db, source_id)
@@ -51,7 +59,6 @@ async def update_source(db: AsyncSession, source_id: int, source: SourceUpdate):
     else:
         raise Exception(f"source with id {id} not found")
 
-
 async def delete_source(db: AsyncSession, source_id: int):
     db_source = await get_source(db, source_id)
     if db_source:
@@ -61,7 +68,6 @@ async def delete_source(db: AsyncSession, source_id: int):
         return db_source
     else:
         raise Exception(f"source with id {id} not found")
-
 
 async def delete_sources(db: AsyncSession):
     db_source = await get_sources(db)

@@ -6,9 +6,18 @@ from app.core.database import (
     init_db
 )
 
-from app.api import source, content, webhook
-from loguru import logger
+from app.api import (
+    source,
+    content, 
+    webhook, 
+    notification,
+    transcription,
+    tag,
+    category,
+    recognition
+)
 
+from loguru import logger
 import uvicorn
 
 # logger configuration
@@ -43,6 +52,11 @@ async def read_root():
 app.include_router(source.router, prefix="/sources", tags=["sources"])
 app.include_router(content.router, prefix="/contents", tags=["contents"])
 app.include_router(webhook.router, prefix="/webhooks", tags=['webhooks'])
+app.include_router(notification.router, prefix="/notifications", tags=['notifications'])
+app.include_router(transcription.router, prefix="/transcriptions", tags=['transcriptions'])
+app.include_router(tag.router, prefix="/tags", tags=['tags'])
+app.include_router(category.router, prefix="/categories", tags=['categories'])
+app.include_router(recognition.router, prefix="/recognitions", tags=['recognitions'])
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

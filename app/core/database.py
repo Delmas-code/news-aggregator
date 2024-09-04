@@ -25,12 +25,16 @@ if os.getenv("PRODUCTION") == "TRUE":
 else:
     DATABASE_URL = os.getenv("DEV_DATABASE_URL")
 
-
 # create sync and async engine with connection pooling
 async_engine = create_async_engine(DATABASE_URL, pool_size=POOL_SIZE, max_overflow=MAX_OVERFLOW, echo=False)
 
 # create an async session maker
 async_session = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+
+# add the db session creator
+async def get_db() -> AsyncSession:
+    async with async_session() as session:
+        yield session
 
 # initialize the database
 database = Database(DATABASE_URL)

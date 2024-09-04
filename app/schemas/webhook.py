@@ -9,7 +9,6 @@ class WebhookBase(BaseModel):
     """
     '...' means that field is required
     """
-    id: str = Field(..., examples="90ou278w-date")
     url: str = Field(..., example="https://instanvi.com")
     secret: str = Field(..., example="sharedWithMe")
     event: str = Field(..., example="content_detected")
@@ -30,6 +29,7 @@ class  WebhookUpdate(BaseModel):
 
 # WebhookInDBBase inherits from WebhookBase and has additional fields for data from DB
 class WebhookInDBBase(WebhookBase):
+    id: int
     last_triggered: datetime
     created_at: datetime
 

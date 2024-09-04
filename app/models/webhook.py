@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, Text, ARRAY, DateTime, Enum, For
 from ..core.database import Base
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from sqlalchemy.dialects.postgresql import NUMERIC
 import bcrypt   
 from enum import Enum as PyEnum
 
@@ -16,9 +15,9 @@ class Webhook(Base):
     """News article/webhook model."""
     __tablename__ = "webhooks"
 
-    id = Column(String, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     url = Column(String, unique=True, index=True, nullable=False)
-    event = Column(String, index=True, nullable=False)
+    event = Column(Enum(WebhookEvents), index=True, nullable=False)
     secret = Column(String, index=True, nullable=False)
     created_at = Column(DateTime, index=True, nullable=False, default=func.now())
     last_triggered = Column(DateTime, nullable=False, default=datetime.utcnow(), onupdate=func.now())    
