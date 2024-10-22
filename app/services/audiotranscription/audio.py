@@ -1,6 +1,4 @@
 import os, sys, asyncio
-current_dir = os.getcwd()
-sys.path.append(current_dir)
 
 from dotenv import load_dotenv
 from loguru import logger
@@ -8,7 +6,11 @@ import assemblyai as aai
 from .extraction import ContentAnalyzer
 from app.schemas.source import Source
 
+current_dir = os.getcwd()
+sys.path.append(current_dir)
+
 load_dotenv()
+
 
 class AssemblyAIHelper:
     def __init__(self, api_key):
@@ -37,7 +39,9 @@ class AssemblyAIHelper:
         print(f"\nSentiment Analysis for {file_url}:")
         for sentiment_result in transcript.sentiment_analysis:
             print(f"Text: {sentiment_result.text}")
-            print(f"Sentiment: {sentiment_result.sentiment}")  # POSITIVE, NEUTRAL, or NEGATIVE
+            print(
+                f"Sentiment: {sentiment_result.sentiment}"
+            )  # POSITIVE, NEUTRAL, or NEGATIVE
             print(f"Confidence: {sentiment_result.confidence}")
             print(f"Timestamp: {sentiment_result.start} - {sentiment_result.end}")
 
@@ -53,26 +57,26 @@ class ProcessAudio:
 
         # Extract title and body from the transcription
         title, body = analyzer.extract_title_and_body(self.text)
-        
+
         # Determine the type of the content at the URL
         url_type = analyzer.determine_url_type(self.url)
 
         new_content = {
-            "source_id" : self.source_id,
-            "title":title,
-            "body":body,
-            "url":self.url,
-            "type":url_type
+            "source_id": self.source_id,
+            "title": title,
+            "body": body,
+            "url": self.url,
+            "type": url_type,
+            "image_url": None,
         }
         return new_content
-        
+
 
 async def main(source: Source):
-
     """Process the audio based on the source url"""
     api_key = os.getenv("API_KEY")
     assembly_ai = AssemblyAIHelper(api_key=api_key)
-    transcription_text = assembly_ai.transcribe(source['url'])
+    transcription_text = assembly_ai.transcribe(source["url"])
 
     if not transcription_text:
         logger.error(f"Transcription failed for {source['url']}")
@@ -80,10 +84,6 @@ async def main(source: Source):
     else:
         """Process the transcribed text"""
         audio = ProcessAudio(
-            text = transcription_text, 
-            url = source['url'], 
-            source_id = source['id']
+            text=transcription_text, url=source["url"], source_id=source["id"]
         )
         return await audio.process_text()
-
-

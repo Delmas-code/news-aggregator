@@ -34,11 +34,16 @@ async def get_contents(
     skip: int = 0, 
     limit: int = 10, 
     db: AsyncSession = Depends(get_db),
-):     
-    if field:
-        return await get_by_fields(db, field, value, skip, limit)
+):  
+    try:
+        if field:
+            return await get_by_fields(db, field, value, skip, limit)
+        return await crud_content.get_contents(db, skip, limit) 
 
-    return await crud_content.get_contents(db, skip, limit) 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
 
 
 # Function to handle optional fields

@@ -1,12 +1,14 @@
 import os, feedparser, datetime, lxml, sys
-current_dir = os.getcwd()
-sys.path.append(current_dir)
 
 from bs4 import BeautifulSoup
 from loguru import logger
 from app.schemas.source import Source
 from app.crud.content import get_source_item_ids
 from app.core.database import get_db
+
+
+current_dir = os.getcwd()
+sys.path.append(current_dir)
 
 
 class ProcessFeed:
@@ -31,7 +33,7 @@ class ProcessFeed:
                 TRIAL = TRIAL + 1    
             if not isOkay:
                 logger.error(self.feed.bozo_exception)
-                return None  
+                # return None  
               
             contents = await self.analyze_feed()
             return contents
@@ -42,7 +44,6 @@ class ProcessFeed:
 
     async def analyze_feed(self):
         items = []
-
         for entry in self.feed.entries:
             content_dict = {}
             content_id = entry['id'] +'_'+ str(datetime.datetime(*entry['published_parsed'][:7])).replace(' ', '_')
@@ -60,7 +61,7 @@ class ProcessFeed:
             if not content_dict['body']:
                 continue
             content_dict['image_url'] = await self.search_image(entry)
-
+            
             items.append(content_dict)
         
         return items
@@ -102,7 +103,7 @@ class ProcessFeed:
             img_url = entry['media_thumbnail'][0]['url']
 
         return img_url
-        
+
 
 async def main(source: Source):
 
@@ -115,4 +116,3 @@ async def main(source: Source):
         """Process the feed based on the ite url"""
         feed = ProcessFeed(source['url'], source['id'], ids)
         return await feed.launch()  
-
