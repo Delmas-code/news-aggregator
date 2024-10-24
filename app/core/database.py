@@ -34,7 +34,10 @@ async_session = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit
 # add the db session creator
 async def get_db() -> AsyncSession:
     async with async_session() as session:
-        yield session
+        try:
+            yield session
+        finally:
+            await session.close()
 
 # initialize the database
 database = Database(DATABASE_URL)

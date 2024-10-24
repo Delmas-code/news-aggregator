@@ -2,7 +2,7 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.content import Content
 from ..schemas.content import ContentCreate, ContentUpdate
-
+from loguru import logger
 
 async def get_content(db: AsyncSession, content_id: int):
     result = await db.execute(select(Content).where(Content.id == content_id))
@@ -14,7 +14,7 @@ async def get_contents(db: AsyncSession, skip: int = 0, limit: int =10, field : 
     return result.scalars().all()
 
 
-# Function to filter by given fields if 
+# Function to filter by given fields if
 async def get_filtered_contents(db: AsyncSession,  field: str, value, skip: int=0, limit: int = 10):
     try:
         value = int(value) if field == "source_id" else value.lower()
@@ -51,14 +51,19 @@ async def get_source_item_ids(db: AsyncSession, source_id: int, limit : int = No
     return result
 
 async def create_content(db: AsyncSession, content: ContentCreate):
-    #print(db)
-    db_content = Content(**content.dict())
-    db.add(db_content)
-    await db.commit()
-    await db.close()
-
-    return db_content
-
+    try:
+        if isinstance(content, dict):
+            db_content = Content(**content)
+        else:
+            db_content = Content(**content.dict())
+            
+        db.add(db_content)
+        await db.commit()
+        await db.refresh(db_content)
+        return db_content
+    except Exception as e:
+        logger.error(f"Error creating content: {e}")
+        await db.rollback()
 
 async def update_content(db: AsyncSession, content_id: str, content: ContentUpdate):
     db_content = await get_content(db, content_id)
@@ -97,4 +102,3 @@ async def delete_contents(db: AsyncSession):
         
     except Exception as e:
         raise Exception(e)
-    

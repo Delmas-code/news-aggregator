@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text, ARRAY, DateTime, Enum, ForeignKey, func
+from sqlalchemy import Column, Integer, String, DateTime, Enum, func
 from ..core.database import Base
-from sqlalchemy.orm import relationship
 from datetime import datetime
 import bcrypt   
 from enum import Enum as PyEnum

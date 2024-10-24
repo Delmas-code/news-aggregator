@@ -5,7 +5,6 @@ import torch
 import re
 import traceback
 import os
-import spacy
 import numpy as np
 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
@@ -129,8 +128,8 @@ async def process_article(article):
             "title": article["title"],
             "type": article["type"],
             "body": article["body"],
-            "flag": tones,
-            "category": categories,
+            "flags": tones,
+            "tags": categories,
             "sentiment": sentiment,
             "entities": entities,
         }
@@ -184,7 +183,6 @@ async def check_queue():
                             processed_articles, default=str
                         )
                         
-                        print(f"Here: {processed_articles_json}")
                         
                         await send_to_persistence_layer(
                             processed_articles_json, channel

@@ -2,7 +2,6 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.webhook import Webhook
 from ..schemas.webhook import WebhookCreate, WebhookUpdate
-from sqlalchemy import func
 
 
 async def get_webhook(db: AsyncSession, webhook_id: int):

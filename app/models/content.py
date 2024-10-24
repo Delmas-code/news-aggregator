@@ -46,13 +46,10 @@ class Content(Base):
     url = Column(String, unique=True, nullable=False)
     image_url = Column(String, nullable=True, default=None)
     type = Column(Enum(ContentType), nullable=False, default="Text")
-    #published_at = Column(DateTime, nullable=False, default=func.now())
-    #last_fetched = Column(DateTime, nullable=False, default=datetime.utcnow(), onupdate=func.now())    
     sentiment = Column(ARRAY(JSON))
     tags = Column(ARRAY(String))
-    # entities is a column array of dictionaries
-    
     entities = Column(ARRAY(JSON))
+    flags = Column(ARRAY(String))
     transcription = Column(Text, nullable=True)
 
     """parent-child relationship with the notification"""
