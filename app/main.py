@@ -27,7 +27,7 @@ app = FastAPI(docs_url="/docs", title="News feed Aggregator")
 
 scheduler = AsyncIOScheduler()
 
-MINUTES = 5
+MINUTES = 2
 
 
 @app.on_event("startup")
@@ -38,9 +38,9 @@ async def startup() -> None:
         await init_db()
         logger.info("Database connection established")
 
-        scheduler.add_job(get_articles, "interval", minutes=MINUTES * 0.35)
-        scheduler.add_job(nlp_check_queue, "interval", minutes=MINUTES * 0.4)
-        scheduler.add_job(persistence_check_queue, "interval", minutes=MINUTES * 0.35)
+        scheduler.add_job(get_articles, "interval", minutes=MINUTES)
+        scheduler.add_job(nlp_check_queue, "interval", minutes=MINUTES)
+        scheduler.add_job(persistence_check_queue, "interval", minutes=MINUTES)
         scheduler.start()
         logger.info("Sheduler started")
     except Exception as e:
@@ -60,7 +60,7 @@ async def shutdown() -> None:
 
 @app.get("/")
 async def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "visit /contents route to get news articles"}
 
 
 app.include_router(source.router, prefix="/sources", tags=["sources"])

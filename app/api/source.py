@@ -78,14 +78,14 @@ async def update_source(
     return updated_source
 
 
+# Delete all sources
+@router.delete("/", response_model=schema_source.Source)
+async def delete_sources(db: AsyncSession = Depends(get_db)):
+    deleted_sources = await crud_source.delete_sources(db)
+    return deleted_sources
+
+
 @router.delete("/{source_id}", response_model=schema_source.Source)
 async def delete_source(source_id: int, db: AsyncSession = Depends(get_db)):
     deleted_source = await crud_source.delete_source(db, source_id)
     return deleted_source
-
-
-# Delete all sources
-@router.delete("/", response_model=schema_source.Source)
-async def delete_source(db: AsyncSession = Depends(get_db)):
-    deleted_sources = await crud_source.delete_sources(db)
-    return deleted_sources

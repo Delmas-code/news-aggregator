@@ -10,7 +10,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.post("/", response_model=schema_webhook.Webhook, status_code=201)
+@router.post("/", response_model=schema_webhook.WebhookInDB, status_code=201)
 async def create_webhook(
     webhook: schema_webhook.WebhookCreate, db: AsyncSession = Depends(get_db)
 ):
@@ -25,7 +25,7 @@ async def create_webhook(
 #  not just by the id
 # but also byt other fields
 
-@router.get("/", response_model=List[schema_webhook.Webhook])
+@router.get("/", response_model=List[schema_webhook.WebhookInDB])
 async def get_webhooks(
     field: Optional[str] = None,
     value = None,
@@ -57,17 +57,17 @@ async def get_by_fields(db: AsyncSession, skip: int, limit: int, field: str, val
     return webhooks
 
 
-@router.get("/{webhook_id}", response_model=schema_webhook.Webhook)
-async def get_webhook(webhook_id: str, db: AsyncSession = Depends(get_db)):
+@router.get("/{webhook_id}", response_model=schema_webhook.WebhookInDB)
+async def get_webhook(webhook_id: int, db: AsyncSession = Depends(get_db)):
     webhook = await crud_webhook.get_webhook(db, webhook_id)
     if webhook is None:
         raise HTTPException(status_code=404, detail="webhook not found")
     return webhook
 
 
-@router.patch("/{webhook_id}", response_model=schema_webhook.Webhook, status_code=200)
+@router.patch("/{webhook_id}", response_model=schema_webhook.WebhookUpdate, status_code=200)
 async def update_webhook(
-    webhook_id: str,
+    webhook_id: int,
     webhook: schema_webhook.WebhookUpdate,
     db: AsyncSession = Depends(get_db),
 ):
@@ -76,7 +76,7 @@ async def update_webhook(
 
 
 @router.delete("/{webhook_id}", response_model=schema_webhook.Webhook)
-async def delete_webhook(webhook_id: str, db: AsyncSession = Depends(get_db)):
+async def delete_webhook(webhook_id: int, db: AsyncSession = Depends(get_db)):
     deleted_webhook = await crud_webhook.delete_webhook(db, webhook_id)
     return deleted_webhook
 

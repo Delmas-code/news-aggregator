@@ -22,9 +22,9 @@ from .recognition import Recognition
 
 class ContentType(PyEnum):
     """News content types."""
-    Text = "Text"
-    Audio = "Audio"
-    Video = "Video"
+    Text = "text"
+    Audio = "audio"
+    Video = "video"
 
 class ContentCategory(PyEnum):
     pass
@@ -45,12 +45,14 @@ class Content(Base):
     body = Column(String, nullable=False)
     url = Column(String, unique=True, nullable=False)
     image_url = Column(String, nullable=True, default=None)
-    type = Column(Enum(ContentType), nullable=False, default="Text")
+    type = Column(Enum(ContentType), nullable=False, default="text")
     sentiment = Column(ARRAY(JSON))
     tags = Column(ARRAY(String))
     entities = Column(ARRAY(JSON))
     flags = Column(ARRAY(String))
     transcription = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     """parent-child relationship with the notification"""
     contents = relationship("Notification", backref="content")
@@ -60,21 +62,6 @@ class Content(Base):
 
     """parent-child relationship with the recognition"""
     contents = relationship("Recognition", backref="content")
-
-    # How to implement the methods
-
-    async def analyze_sentiment(self):
-        """call the analyze service here"""
-        pass
-    async def categorize_content(self, category):
-        """categorize content"""
-        pass
-    async def save_content(self, content) -> None:
-        """save content"""
-        pass
-    async def flag_content(self, flag) -> None:
-        """flag the content"""
-        pass
 
     def __repr__(self):
         """Return a string representation of the content"""

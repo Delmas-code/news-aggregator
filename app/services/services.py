@@ -22,6 +22,7 @@ load_dotenv()
 # Contstants
 RABBITMQ_URL = os.getenv("RABBITMQ_URL")
 
+
 async def publish_message(channel, message, routing_key="articles"):
     try:
         if message:
@@ -33,23 +34,23 @@ async def publish_message(channel, message, routing_key="articles"):
     except Exception as e:
         logger.error(f"Error publishing message: {e}")
 
+
 async def process_item(channel, item):
     serialized_item = user_schema.dump(item)
     type = serialized_item.get("type")
-    
+
     try:
         if type in ["rss", "feed"]:
             result = await rss_main(serialized_item)
         elif type in ["audio", "video"]:
             result = await audio_main(serialized_item)
-            #print(f'result: {result}')
+
         else:
             logger.error(f"Unsupported type: {type}")
             return
-        
+
         if result:
             serialized_result = json.dumps(result)
-            #print(serialized_result)
             await publish_message(channel, serialized_result)
         else:
             logger.warning(f"Skipping empty result for item: {item}")
@@ -71,9 +72,11 @@ async def main():
         async with connection:
             channel = await connection.channel()
             await channel.declare_queue("articles")
-        
+
             async for db_session in get_db():
-                async for batch in source_crud.get_sources_in_batch(db_session, limit=10):
+                async for batch in source_crud.get_sources_in_batch(
+                    db_session, limit=10
+                ):
                     await process_batch(batch, channel)
     except Exception as e:
         logger.error(f"Error in processing batches: {e}")

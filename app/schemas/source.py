@@ -23,7 +23,7 @@ class SourceCreate(SourceBase):
 
 # SourceUpdate inherits from SourceBase and has optional fields
 # Use this when updating a source
-class   SourceUpdate(BaseModel):
+class SourceUpdate(BaseModel):
     name: Optional[str] = Field(None, example="instanvi")
     url: Optional[str] = Field(None, example="https://instanvi.com")
     type: Optional[SourceType] = Field(None, example=SourceType.Website)
@@ -36,7 +36,6 @@ class SourceInDBBase(SourceBase):
     last_fetched: datetime
     created_at: datetime
     updated_at: datetime
-
 
 # Source inherits from SourceInDBBase since it has the same fields
 # Use this when returning data from the API

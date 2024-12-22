@@ -1,18 +1,14 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
-
-# WebhookBase has the required fields for creating a Webhook
-# Use this as the base class for WebhookCreate and WebhookUpdate
+from ..models.webhook import WebhookEvents
 
 class WebhookBase(BaseModel):
     """
     '...' means that field is required
     """
     url: str = Field(..., example="https://instanvi.com")
-    secret: str = Field(..., example="sharedWithMe")
-    event: str = Field(..., example="content_detected")
-
+    event: Optional[WebhookEvents] = Field(..., example=WebhookEvents.updates)
 
 # # WebhookCreate inherits from WebhookBase since it has the same fields
 # # Use this when creating a Webhook
@@ -21,9 +17,8 @@ class WebhookCreate(WebhookBase):
 
 # WebhookUpdate inherits from WebhookBase and has optional fields
 # Use this when updating a Webhook
-class  WebhookUpdate(BaseModel):
+class WebhookUpdate(BaseModel):
     event: Optional[str] = Field(None, example="instanvi")
-    secret: Optional[str] = Field(None, example="instanvi")
     url: Optional[str] = Field(None, example="https://instanvi.com")
 
 
@@ -32,7 +27,7 @@ class WebhookInDBBase(WebhookBase):
     id: int
     last_triggered: datetime
     created_at: datetime
-
+    updated_at: datetime
 
 # Webhook inherits from WebhookInDBBase since it has the same fields
 # Use this when returning data from the API

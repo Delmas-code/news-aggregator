@@ -22,11 +22,6 @@ async def create_content(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
-# Add some optional params, such that the content can be filtered,
-#  not just by the id
-# but also byt other fields
-
 @router.get("/", response_model=List[schema_content.Content])
 async def get_contents(
     field: Optional[str] = None,
@@ -44,9 +39,6 @@ async def get_contents(
         raise HTTPException(status_code=500, detail=str(e))
     
 
-
-
-# Function to handle optional fields
 async def get_by_fields(db: AsyncSession, field: str, value, skip: int, limit: int):
     field = field.lower()
     # Create an array of all the model fields
@@ -75,7 +67,7 @@ async def get_content(content_id: str, db: AsyncSession = Depends(get_db)):
 
 @router.patch("/{content_id}", response_model=schema_content.Content, status_code=200)
 async def update_content(
-    content_id: str,
+    content_id: int,
     content: schema_content.ContentUpdate,
     db: AsyncSession = Depends(get_db),
 ):
@@ -84,7 +76,7 @@ async def update_content(
 
 
 @router.delete("/{content_id}", response_model=schema_content.Content)
-async def delete_content(content_id: str, db: AsyncSession = Depends(get_db)):
+async def delete_content(content_id: int, db: AsyncSession = Depends(get_db)):
     deleted_content = await crud_content.delete_content(db, content_id)
     return deleted_content
 

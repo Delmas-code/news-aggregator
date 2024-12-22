@@ -1,4 +1,3 @@
-import asyncio
 import aio_pika
 import json
 import os
@@ -9,6 +8,10 @@ from dotenv import load_dotenv
 
 from app.crud.content import create_content
 from app.schemas.content import ContentCreate
+
+
+from ..notifications.main import get_hooks
+from ..notifications.main import send_webhooks
 
 from ...core.database import get_db
 
@@ -46,7 +49,10 @@ async def check_queue():
                             continue
                         for article in articles:
                             await save_content_to_db(article)
-
+                        # Notify Webhooks
+                        urls = await get_hooks()
+                        if urls:
+                            await send_webhooks(urls)
                     except json.JSONDecodeError as e:
                         logger.error(f"Invalid JSON: {e}")
                     except Exception as e:
