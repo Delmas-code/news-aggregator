@@ -44,11 +44,6 @@ News aggregator application.
 
 ## Development
 
-- Run tests:
-  ```
-  poetry run pytest
-  ```
-
 - Install new packages (Add packages):
 ```
 poetry add <package-name>
@@ -78,10 +73,6 @@ news-aggregator/
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── notification.py
-│   ├── utils/
-│   │   ├── __init__.py
-│   ├── tests/
-│       ├── __init__.py
 ├── logs
 |  |  ├── app.log
 ├── .env
