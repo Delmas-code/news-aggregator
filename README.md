@@ -31,8 +31,7 @@ News aggregator application.
 
 5. Set up environment variables:
    ```
-   Add and Edit `.env` with your specific configuration.
-         Ensuring you add 
+   Add and Edit `.env` with your specific configuration ensuring to add: 
       API_KEY= Get assemblyai api key -> For assemblyAI
       DEV_DATABASE_URL=postgresql+asyncpg://postgres:*Your pswd*@127.0.0.1:5432/*db_name*
       PRODUCTION=FALSE
