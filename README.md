@@ -33,8 +33,8 @@ News aggregator application.
    ```
    Add and Edit `.env` with your specific configuration.
          Ensuring you add 
-      API_KEY=6e5a0a50f3a547419708dd55fd3e8bad -> For assemblyAI
-               DEV_DATABASE_URL=postgresql+asyncpg://postgres:*Your pswd*@127.0.0.1:5432/*db_name*
+      API_KEY= Get assemblyai api key -> For assemblyAI
+      DEV_DATABASE_URL=postgresql+asyncpg://postgres:*Your pswd*@127.0.0.1:5432/*db_name*
       PRODUCTION=FALSE
       RABBITMQ_URL=amqp://guest:guest@127.0.0.1/
       INTERVAL_TYPE = minutes  # change to days, hours etc in env
