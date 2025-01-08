@@ -31,7 +31,13 @@ News aggregator application.
 
 5. Set up environment variables:
    ```
-   Add and Edit `.env` with your specific configuration.
+   Add and Edit `.env` with your specific configuration ensuring to add: 
+      API_KEY= Get assemblyai api key -> For assemblyAI
+      DEV_DATABASE_URL=postgresql+asyncpg://postgres:*Your pswd*@127.0.0.1:5432/*db_name*
+      PRODUCTION=FALSE
+      RABBITMQ_URL=amqp://guest:guest@127.0.0.1/
+      INTERVAL_TYPE = minutes  # change to days, hours etc in env
+      INTERVAL_DURATION = 5
 
 ## Usage
 
@@ -44,11 +50,6 @@ News aggregator application.
 
 ## Development
 
-- Run tests:
-  ```
-  poetry run pytest
-  ```
-
 - Install new packages (Add packages):
 ```
 poetry add <package-name>
@@ -60,33 +61,26 @@ news-aggregator/
 ├── app/
 │   ├── __init__.py
 │   ├── main.py
-│   ├── core/
+│   ├── api/
 │   │   ├── __init__.py
-│   │   ├── database.py
-│   ├── routers/
-│   │   ├── __init__.py
-|   |   ├── source.py
+│   │   ├── content.py
 │   ├── crud/
 │   │   ├── __init__.py
-|   |   ├── source.py
-│   ├── schemas/
-│   │   ├── __init__.py
-|   |   ├── source.py
+│   │   ├── content.py
 │   ├── models/
 │   │   ├── __init__.py
-|   |   ├── source.py
+│   │   ├── content.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── content.py
 │   ├── services/
 │   │   ├── __init__.py
-│   │   ├── notification.py
-│   ├── utils/
-│   │   ├── __init__.py
-│   ├── tests/
-│       ├── __init__.py
-├── logs
-|  |  ├── app.log
+│   │   ├── nlp/
+│   │   │   ├── __init__.py
+│   │   │   ├── core.py
+│   │   │   ├── main.py
 ├── .env
-├── README.md
-├── .gitignore
 ├── pyproject.toml
-└── poetry.lock
+├── poetry.lock
+└── README.md
 ```
