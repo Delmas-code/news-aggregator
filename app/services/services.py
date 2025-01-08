@@ -22,7 +22,6 @@ load_dotenv()
 # Contstants
 RABBITMQ_URL = os.getenv("RABBITMQ_URL")
 
-
 async def publish_message(channel, message, routing_key="articles"):
     try:
         if message:

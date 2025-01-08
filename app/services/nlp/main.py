@@ -17,9 +17,16 @@ load_dotenv()
 # Constants
 RABBITMQ_URL = os.getenv("RABBITMQ_URL")
 MODEL_NAME = "microsoft/deberta-v3-small"
-MODELS_PATH = os.path.join(os.path.dirname(__file__), "models/")
-TONE_MODEL_PATH = os.path.join(MODELS_PATH, "tone/")
-CATEGORY_MODEL_PATH = os.path.join(MODELS_PATH, "category/")
+
+# Dev
+# MODELS_PATH = os.path.join(os.path.dirname(__file__), "models/")
+# TONE_MODEL_PATH = os.path.join(MODELS_PATH, "tone/")
+# CATEGORY_MODEL_PATH = os.path.join(MODELS_PATH, "category/")
+
+# Prod
+TONE_MODEL_PATH = "ngenge/tone_classifier"
+CATEGORY_MODEL_PATH = "ngenge/nlp_processor" # for multilabel classification
+
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "labels")
 THRESHOLD_RANGES = {
     (0.1, 0.3): 1,
@@ -42,7 +49,6 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, clean_up_tokenization_spac
 
 ner_model = pipeline(
     "token-classification",
-    #model="Babelscape/wikineural-multilingual-ner",
     model="dslim/bert-base-NER",
     device=device
 )
@@ -112,7 +118,8 @@ class DynamicLabelSelector:
 
 async def process_article(article):
     try:
-        text = clean_text(article["title"] + " " + article["body"])
+        text = article["title"] + " " + article["body"]
+        text = clean_text(text)
         tone_selector = DynamicLabelSelector(tone_model, id2tone)
         category_selector = DynamicLabelSelector(category_model, id2category)
 

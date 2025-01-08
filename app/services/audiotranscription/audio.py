@@ -1,4 +1,5 @@
-import os, sys, asyncio
+import os
+import sys
 
 from dotenv import load_dotenv
 from loguru import logger
@@ -10,7 +11,6 @@ current_dir = os.getcwd()
 sys.path.append(current_dir)
 
 load_dotenv()
-
 
 class AssemblyAIHelper:
     def __init__(self, api_key):
@@ -26,6 +26,7 @@ class AssemblyAIHelper:
 
         return transcript.text
 
+    """
     def analyze_sentiment(self, file_url):
         config = aai.TranscriptionConfig(sentiment_analysis=True)
 
@@ -44,6 +45,7 @@ class AssemblyAIHelper:
             )  # POSITIVE, NEUTRAL, or NEGATIVE
             print(f"Confidence: {sentiment_result.confidence}")
             print(f"Timestamp: {sentiment_result.start} - {sentiment_result.end}")
+            """
 
 
 class ProcessAudio:

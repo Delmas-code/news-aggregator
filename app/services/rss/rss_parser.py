@@ -1,4 +1,7 @@
-import os, feedparser, datetime, lxml, sys
+import os
+import feedparser
+import datetime
+import sys
 
 from bs4 import BeautifulSoup
 from loguru import logger
