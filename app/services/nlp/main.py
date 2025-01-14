@@ -16,6 +16,7 @@ load_dotenv()
 
 # Constants
 RABBITMQ_URL = os.getenv("RABBITMQ_URL")
+HF_AUTH_KEY = os.gentev("HF_AUTH_KEY")
 MODEL_NAME = "microsoft/deberta-v3-small"
 
 # Dev
@@ -25,7 +26,7 @@ MODEL_NAME = "microsoft/deberta-v3-small"
 
 # Prod
 TONE_MODEL_PATH = "ngenge/tone_classifier"
-CATEGORY_MODEL_PATH = "ngenge/nlp_processor" # for multilabel classification
+CATEGORY_MODEL_PATH = "ngenge/nlp_processor"  # for multilabel classification
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "labels")
 THRESHOLD_RANGES = {
@@ -45,26 +46,24 @@ with open(os.path.join(LABELS_PATH, "categories.json"), "r") as f:
     id2category = json.load(f)["id2category"]
 
 # Load models and tokenizer
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, clean_up_tokenization_spaces=True)
-
-ner_model = pipeline(
-    "token-classification",
-    model="dslim/bert-base-NER",
-    device=device
+tokenizer = AutoTokenizer.from_pretrained(
+    MODEL_NAME, clean_up_tokenization_spaces=True, use_auth_token=HF_AUTH_KEY
 )
+
+category_model = AutoModelForSequenceClassification.from_pretrained(
+    CATEGORY_MODEL_PATH, use_auth_token=HF_AUTH_KEY
+).to(device)
+
+tone_model = AutoModelForSequenceClassification.from_pretrained(
+    TONE_MODEL_PATH, use_auth_token=HF_AUTH_KEY
+).to(device)
+
+ner_model = pipeline("token-classification", model="dslim/bert-base-NER", device=device)
 
 sentiment_model = pipeline(
     "text-classification",
     model="cardiffnlp/twitter-roberta-base-sentiment-latest",
     device=device,
-)
-
-category_model = AutoModelForSequenceClassification.from_pretrained(
-    CATEGORY_MODEL_PATH
-).to(device)
-
-tone_model = AutoModelForSequenceClassification.from_pretrained(TONE_MODEL_PATH).to(
-    device
 )
 
 
@@ -153,8 +152,10 @@ async def process_article_batch(articles):
 
 async def send_to_persistence_layer(article, channel):
     try:
-        persistence_queue = await channel.declare_queue("persistence", auto_delete=False)
-        
+        persistence_queue = await channel.declare_queue(
+            "persistence", auto_delete=False
+        )
+
         if article:
             await channel.default_exchange.publish(
                 aio_pika.Message(body=article.encode()),
@@ -162,7 +163,7 @@ async def send_to_persistence_layer(article, channel):
             )
         else:
             logger.warning("Skipping empty message, nothing to publish")
-            
+
     except Exception as e:
         logger.error(f"Error publishing message: {e}")
 
@@ -172,7 +173,7 @@ async def check_queue():
     async with connection:
         channel = await connection.channel()
         queue = await channel.declare_queue("articles", auto_delete=False)
-        
+
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
@@ -189,8 +190,7 @@ async def check_queue():
                         processed_articles_json = json.dumps(
                             processed_articles, default=str
                         )
-                        
-                        
+
                         await send_to_persistence_layer(
                             processed_articles_json, channel
                         )
