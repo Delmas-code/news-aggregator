@@ -39,6 +39,8 @@ protobuf = "^5.28.2"
 thinc = "^8.2.2"
 spacy = "^3.7.5"
 cython = "^3.0.11"
+nltk = "^3.9.1"
+langdetect = "^1.0.9"
 
 [build-system]
 requires = ["poetry-core"]

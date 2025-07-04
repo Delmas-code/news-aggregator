@@ -3,3 +3,4 @@
 app/core/beta.py
 app/services/nlp/models
 /logs
+/venv
