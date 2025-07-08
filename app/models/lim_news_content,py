@@ -1,0 +1,39 @@
+from sqlalchemy import (
+    Column,
+    String,
+    DateTime,
+    JSON,
+    FLOAT
+    )
+from ..core.database import Base, LIM_Base
+from datetime import datetime
+import uuid
+
+
+def generate_key():
+    return str(uuid.uuid4())
+
+class Content(LIM_Base):
+    """News article/content model."""
+    __tablename__ = "contents"
+
+    # A content, based on the rss feed
+    # has a guid and a pub date that can uniquely identify it.
+
+    id = Column(String, primary_key=True, default=generate_key, index=True)
+    title = Column(String, unique=True, nullable=False)
+    body = Column(String, nullable=False)
+    url = Column(String, unique=True, nullable=False)
+    image_url = Column(String, nullable=True, default="news_aggregator")
+    service_provide = Column(String, nullable=True, default=None)
+    article_id = Column(String, nullable=False)
+    determined_topic = Column(String, unique=True, nullable=False)
+    sentiment = Column(FLOAT, unique=True, nullable=False)
+    sentiment_level = Column(String, unique=True, nullable=False)
+    location = Column(JSON, unique=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        """Return a string representation of the content"""
+        return f"<Content={self.title}, Type={self.type}>"
